@@ -180,6 +180,9 @@ def predict(**kwargs):
 
 
     #load the best model
+    path_ = os.getcwd()
+
+    print("this is the path", path_)
 
     load_model = tf.keras.models.load_model('./unet/unet/models_folder/best_model.h5', custom_objects={'dice_coefficient': dice_coefficient})
 
