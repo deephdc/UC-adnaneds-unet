@@ -162,53 +162,53 @@ def predict(**kwargs):
     #data = imread(filepath)
 
     
-    ########## Preprocessing 
 
-    # 1 case , one image
-    #read_image = data
-    list_images = []
-
-    read_image = imread(filepath)   
-    image_resized = transform.resize(read_image, input_size_2).astype(np.float32)
-    
-    list_images.append(image_resized) 
-    
-    X_test = np.array(list_images)
-
-    print("Shape of this image" , X_test.shape)
-    print("Preprocessing Done")
-
-
-    #load the best model
-    path_ = os.getcwd()
-
-    print("this is the path", path_)
-
-    load_model = tf.keras.models.load_model('./unet/unet/models_folder/best_model.h5', custom_objects={'dice_coefficient': dice_coefficient})
-
-    print("Model : successfully loaded")
-
-    # inference for image
-    prediction = load_model.predict(X_test) #
-
-    preds_test_t = (prediction > 0.3).astype(np.uint8)
-
-    X_test_result = np.squeeze(preds_test_t[0,:,:,2])*255
-
-    print('inference Done')
-
-
-    # Saving result 
-    imsave("output.png", X_test_result)
-
-
-   #inference for dataset
-   # ...
 
 
     # Return the result directly
     if kwargs['accept'] == 'image/*':
-            
+    
+        ########## Preprocessing 
+
+        # 1 case , one image
+        #read_image = data
+        list_images = []
+
+        read_image = imread(filepath)   
+        image_resized = transform.resize(read_image, input_size_2).astype(np.float32)
+        
+        list_images.append(image_resized) 
+        
+        X_test = np.array(list_images)
+
+        print("Shape of this image" , X_test.shape)
+        print("Preprocessing Done")
+
+
+        #load the best model
+        path_ = os.getcwd()
+
+        print("this is the path", path_)
+
+        load_model = tf.keras.models.load_model('./unet/unet/models_folder/best_model.h5', custom_objects={'dice_coefficient': dice_coefficient})
+
+        print("Model : successfully loaded")
+
+        # inference for image
+        prediction = load_model.predict(X_test) #
+
+        preds_test_t = (prediction > 0.3).astype(np.uint8)
+
+        X_test_result = np.squeeze(preds_test_t[0,:,:,2])*255
+
+        print('inference Done')
+
+
+        # Saving result 
+        imsave("output.png", X_test_result)
+
+
+
         return open("output.png", 'rb')
 
     
@@ -217,41 +217,35 @@ def predict(**kwargs):
     # Return a zip
     elif kwargs['accept'] == 'application/zip' :
 
+        
         zip_dir = tempfile.TemporaryDirectory()
 
         # Add original image to output zip
-        shutil.copyfile("output.png",
-                        zip_dir.name + '/demo.png')
+        #shutil.copyfile("output.png",
+        #                zip_dir.name + '/demo.png')
 
-        #pickle.dump(, open())
-        #image = open(zip_path, 'rb')
-        
-        #image_name = image.filename
-        #original_name =  "/tmp/%s" % image.original_filename
-        #os.rename(image.filename, original_name) 
-        #filename, image_form = os.path.splitext(image.original_filename)
-        
-        #image_tmp = Image.open(original_name)
-        
-        
-        
+        shutil.copyfile(filepath,
+                zip_dir.name + '/demo.png')        
         # Add for example a demo txt file
         with open(f'{zip_dir.name}/demo.txt', 'w') as f:
             f.write('Add here any additional information!')
-            #f.write(f'{original_name} {filename}')
-            #f.write(f'{type(image)}')
-            #pickle.dump(open(filepath, 'rb'))
+
 
         # Pack dir into zip and return it
         shutil.make_archive(zip_dir.name, format='zip', root_dir=zip_dir.name)
         zip_path = zip_dir.name + '.zip'
 
-        #path_0 = zip_dir.name
+        
+        
+        
 
-        #image_tmp.save(path_0)
-        #image_test = kwargs['demo-image']
         
+        #inference for dataset
+        # ...
         
+
+
+
 
         return open(zip_path, 'rb')
 
