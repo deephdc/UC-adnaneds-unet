@@ -181,7 +181,7 @@ def predict(**kwargs):
 
     #load the best model
 
-    load_model = tf.keras.models.load_model('./unet/models_folder/best_model.h5', custom_objects={'dice_coefficient': dice_coefficient})
+    load_model = tf.keras.models.load_model('./unet/unet/models_folder/best_model.h5', custom_objects={'dice_coefficient': dice_coefficient})
 
     print("Model : successfully loaded")
 
