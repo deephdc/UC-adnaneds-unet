@@ -21,12 +21,88 @@ To start populating this file, take a look at the docs [1] and at a canonical ex
 [2]: https://github.com/deephdc/demo_app
 """
 
+
+# Basic modules for api
 from functools import wraps
 import shutil
 import tempfile
-
+#
 from aiohttp.web import HTTPBadRequest
 from webargs import fields, validate
+
+#import pickle
+#import base64
+
+########## Importing Other packages start from here 
+
+
+# OS and others packages
+import os
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# image processing libraries
+
+#import skimage.io as io
+import cv2
+
+from PIL import Image
+from skimage.io import imread, imsave
+
+from skimage.color import rgb2gray
+
+from skimage import transform
+from skimage import img_as_bool
+
+
+# Tensorflow packages 
+import tensorflow as tf
+
+from tensorflow.keras.models import Model, load_model
+
+#from tensorflow import keras
+#from tensorflow.keras import backend as K
+   
+
+from tensorflow.keras.losses import CategoricalCrossentropy, BinaryCrossentropy
+#from focal_loss import BinaryFocalLoss
+
+import h5py
+
+
+
+
+# Some parametres for preprocessing image_input
+
+IMG_WIDTH = 1024
+IMG_HEIGHT = 1024
+IMG_CHANNELS = 3
+
+input_size_2 = (IMG_WIDTH, IMG_HEIGHT)
+input_size_3 = (IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)
+
+
+
+## Metrics for prediction 
+
+def dice_coefficient(y_true, y_pred):
+    eps = 1e-6
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2. * intersection) / (K.sum(y_true_f * y_true_f) + K.sum(y_pred_f * y_pred_f) + eps) #eps pour éviter la division par 0 
+
+
+
+
+
+
+
+
+#### API functions start from here 
 
 
 def _catch_error(f):
@@ -71,23 +147,6 @@ def get_predict_args():
     return arg_dict
 
 
-import numpy as np
-import os
-import cv2
-import matplotlib.pyplot as plt
-import skimage.io as io
-import cv2
-from skimage import transform
-from skimage import img_as_bool
-
-
-
-IMG_WIDTH = 512
-IMG_HEIGHT = 512
-IMG_CHANNELS = 3
-
-input_size_2 = (IMG_WIDTH, IMG_HEIGHT)
-input_size_3 = (IMG_WIDTH,IMG_HEIGHT,IMG_CHANNELS)
 
 
 
@@ -98,37 +157,98 @@ def predict(**kwargs):
     """
     filepath = kwargs['demo-image'].filename
 
-    # Return the image directly
+
+    ## Import file
+    #data = imread(filepath)
+
+    
+    ########## Preprocessing 
+
+    # 1 case , one image
+    #read_image = data
+    list_images = []
+
+    read_image = imread(filepath)   
+    image_resized = transform.resize(read_image, input_size_2).astype(np.float32)
+    
+    list_images.append(image_resized) 
+    
+    X_test = np.array(list_images)
+
+    print("Shape of this image" , X_test.shape)
+    print("Preprocessing Done")
+
+
+    #load the best model
+
+    load_model = tf.keras.models.load_model('./unet/models_folder/best_model.h5', custom_objects={'dice_coefficient': dice_coefficient})
+
+    print("Model : successfully loaded")
+
+    # inference for image
+    prediction = load_model.predict(X_test) #
+
+    preds_test_t = (prediction > 0.3).astype(np.uint8)
+
+    X_test_result = np.squeeze(preds_test_t[0,:,:,2])*255
+
+    print('inference Done')
+
+
+    # Saving result 
+    imsave("output.png", X_test_result)
+
+
+   #inference for dataset
+   # ...
+
+
+    # Return the result directly
     if kwargs['accept'] == 'image/*':
-        
-        convert_gray = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
-        convert_gray = np.asarray(convert_gray, dtype="uint8")
-        mask_resized = cv2.resize(convert_gray, input_size_2, interpolation=cv2.INTER_NEAREST)
-        
-        return mask_resized
-        #return open(filepath, 'rb')
+            
+        return open("output.png", 'rb')
 
-
-
-
+    
 
 
     # Return a zip
-    elif kwargs['accept'] == 'application/zip':
+    elif kwargs['accept'] == 'application/zip' :
 
         zip_dir = tempfile.TemporaryDirectory()
 
         # Add original image to output zip
-        shutil.copyfile(filepath,
+        shutil.copyfile("output.png",
                         zip_dir.name + '/demo.png')
 
+        #pickle.dump(, open())
+        #image = open(zip_path, 'rb')
+        
+        #image_name = image.filename
+        #original_name =  "/tmp/%s" % image.original_filename
+        #os.rename(image.filename, original_name) 
+        #filename, image_form = os.path.splitext(image.original_filename)
+        
+        #image_tmp = Image.open(original_name)
+        
+        
+        
         # Add for example a demo txt file
         with open(f'{zip_dir.name}/demo.txt', 'w') as f:
             f.write('Add here any additional information!')
+            #f.write(f'{original_name} {filename}')
+            #f.write(f'{type(image)}')
+            #pickle.dump(open(filepath, 'rb'))
 
         # Pack dir into zip and return it
         shutil.make_archive(zip_dir.name, format='zip', root_dir=zip_dir.name)
         zip_path = zip_dir.name + '.zip'
+
+        #path_0 = zip_dir.name
+
+        #image_tmp.save(path_0)
+        #image_test = kwargs['demo-image']
+        
+        
 
         return open(zip_path, 'rb')
 
@@ -153,8 +273,8 @@ def predict(**kwargs):
 #     return {}
 #
 #
-# def train(**kwargs):
-#     return None
+def train(**kwargs):
+    return predict(**kwargs)
 
 
 ################################################################
