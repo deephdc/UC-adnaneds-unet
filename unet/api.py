@@ -47,7 +47,7 @@ import matplotlib.pyplot as plt
 # image processing libraries
 
 #import skimage.io as io
-import cv2
+#import cv2
 
 from PIL import Image
 from skimage.io import imread, imsave
