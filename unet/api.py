@@ -38,7 +38,7 @@ from webargs import fields, validate
 
 # OS and others packages
 import os
-
+import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -72,6 +72,13 @@ from tensorflow.keras.losses import CategoricalCrossentropy, BinaryCrossentropy
 
 import h5py
 
+
+#import zipfile
+if sys.version_info >= (3, 6):
+    import zipfile
+else:
+    import zipfile36 as zipfile
+#import shutil
 
 
 
@@ -156,7 +163,9 @@ def predict(**kwargs):
     Return same inputs as provided.
     """
     filepath = kwargs['demo-image'].filename
-
+    name = kwargs['demo-image'].name
+    content_type_info = kwargs['demo-image'].content_type
+    original_filename = kwargs['demo-image'].original_filename
 
     ## Import file
     #data = imread(filepath)
@@ -236,7 +245,47 @@ def predict(**kwargs):
         zip_path = zip_dir.name + '.zip'
 
         
+        ########## Preprocessing 
+        # 2 case , dataset.zip
+
+        #read_image = data
+        #list_images = []
+
+        #shutil.unpack_archive(filepath, "data_output")
         
+        
+        #with zipfile.ZipFile(filepath, 'r') as zip_ref:
+        #    zip_ref.extractall("./unet/")
+        
+        #data_dir_path = r'/My Drive/ESRF_Seg_Hands_on/'
+        
+        #root = os.getcwd()
+        
+        #data_dir_path = filepath
+        #os.makedirs(root+data_dir_path, exist_ok=True)
+        #os.listdir(root+data_dir_path)
+        #full_path = root+data_dir_path
+
+        print("This is the file path as filename", filepath)
+        print("THis is the name", name)
+        print("THis is the content_type", content_type_info) 
+        print("THis is the original_file_name", original_filename) 
+
+        #with ZipFile(f"{filepath}", 'r') as zipObj:
+            # Extract all the contents of zip file in current directory
+        #    zipObj.extractall()
+
+        #!unzip -q filepath
+        print('unpack done')
+        #read_image = imread(filepath)   
+        #image_resized = transform.resize(read_image, input_size_2).astype(np.float32)
+        
+        #list_images.append(image_resized) 
+        
+        #X_test = np.array(list_images)
+
+        #print("Shape of this image" , X_test.shape)
+        #print("Preprocessing Done")
         
 
         
