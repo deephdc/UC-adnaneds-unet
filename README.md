@@ -8,6 +8,7 @@ To launch it, first install the package then run [deepaas](https://github.com/in
 git clone https://github.com/adnaneds/unet
 cd unet
 pip install -e .
+cd ..
 deepaas-run --listen-ip 0.0.0.0
 ```
 The associated Docker container for this module can be found in https://github.com/adnaneds/DEEP-OC-unet.
