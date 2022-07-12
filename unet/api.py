@@ -366,7 +366,7 @@ def predict(**kwargs):
         ### Inference for dataset 
         print("inference start ")
 
-        prediction_data = x_load_model.predict(X_test_data, verbose=1)
+        prediction_data = x_load_model.predict(X_test_data)
         prediction_data_thresh = (prediction_data > 0.3).astype(np.uint8)
 
         print("Prediction done")
