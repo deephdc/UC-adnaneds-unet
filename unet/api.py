@@ -176,11 +176,6 @@ def predict(**kwargs):
     #name = kwargs['demo-image'].name
     #content_type_info = kwargs['demo-image'].content_type
     #original_filename = kwargs['demo-image'].original_filename
-
-    filepath2 = kwargs['data'].filename
-    name = kwargs['data'].name
-    content_type_info = kwargs['data'].content_type
-    original_filename = kwargs['data'].original_filename
     
     ## Import file
     #data = imread(filepath)
@@ -194,11 +189,12 @@ def predict(**kwargs):
     
         ########## Preprocessing 
 
+        filepath = kwargs['demo-image'].filename
         # 1 case , one image
         #read_image = data
         list_images = []
 
-        read_image = imread(filepath2)   
+        read_image = imread(filepath)   
         image_resized = transform.resize(read_image, input_size_2).astype(np.float32)
         
         list_images.append(image_resized) 
@@ -239,9 +235,15 @@ def predict(**kwargs):
     
 
 
+
     # Return a zip
     elif kwargs['accept'] == 'application/zip' :
+        
 
+        filepath2 = kwargs['data'].filename
+        name = kwargs['data'].name
+        content_type_info = kwargs['data'].content_type
+        original_filename = kwargs['data'].original_filename
         
         zip_dir = tempfile.TemporaryDirectory()
 
@@ -368,6 +370,8 @@ def predict(**kwargs):
 
         print("Prediction done")
         
+
+        ## Saving result 
         print("Saving results ... ")
         
         for ix, img_name in tqdm(zip(range(len(images_name)), images_name), total=len(images_name)): 
@@ -375,27 +379,9 @@ def predict(**kwargs):
             imsave(f'{zip_dir.name}' + '/' + f'{img_name}', result_mask)
 
         print('inference Done')
-        print("You can dowload the masks")
-        # Saving result 
+        print("You can dowload the masks, the temporary directory below")
         
-
-        ###########
-
-        #with ZipFile(original_filename, 'r') as obj_zip:
-        #    FileNames = obj_zip.namelist()
-        #    #print("the list files in zip", FileNames)
-        #    for elem in FileNames:
-        #        print(elem)
-
-        
-        #inference for dataset
-        # ...
-        
-        #final step
-        #with ZipFile('spam.zip', 'w') as myzip:
-        #    myzip.write('eggs.txt')
-
-
+        # Saving result into zip file
         # Pack dir into zip and return it
         shutil.make_archive(zip_dir.name, format='zip', root_dir=zip_dir.name)
         zip_path = zip_dir.name + '.zip'
