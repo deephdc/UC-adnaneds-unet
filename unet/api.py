@@ -375,7 +375,7 @@ def predict(**kwargs):
         
         for ix, img_name in tqdm(zip(range(len(images_name)), images_name), total=len(images_name)): 
             result_mask = np.squeeze(prediction_data_thresh[ix,:,:,2])*255
-            imsave(zip_dir.name + f"/{img_name}", result_mask)
+            imsave(zip_dir.name + '/' + f"{img_name}", result_mask)
 
         print('inference Done')
         print("You can dowload the masks")
