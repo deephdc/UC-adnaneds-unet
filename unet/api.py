@@ -71,7 +71,7 @@ from tensorflow.keras.losses import CategoricalCrossentropy, BinaryCrossentropy
 #from focal_loss import BinaryFocalLoss
 
 import h5py
-
+from tqdm import tqdm
 
 #import zipfile
 if sys.version_info >= (3, 6):
@@ -79,6 +79,8 @@ if sys.version_info >= (3, 6):
 else:
     import zipfile36 as zipfile
 #import shutil
+import zlib
+from pathlib import Path
 
 
 
@@ -142,6 +144,14 @@ def get_predict_args():
             location="form",
             description="image",  # needed to be parsed by UI
         ),
+        
+        "data": fields.Field(
+            description="Data file to perform inference on.",
+            required=False,
+            missing=None,
+            type="file",
+            location="form")
+        ,
         # Add format type of the response of predict()
         # For demo purposes, we allow the user to receive back
         # either an image or a zip containing an image.
@@ -162,11 +172,16 @@ def predict(**kwargs):
     """
     Return same inputs as provided.
     """
-    filepath = kwargs['demo-image'].filename
-    name = kwargs['demo-image'].name
-    content_type_info = kwargs['demo-image'].content_type
-    original_filename = kwargs['demo-image'].original_filename
+    #filepath = kwargs['demo-image'].filename
+    #name = kwargs['demo-image'].name
+    #content_type_info = kwargs['demo-image'].content_type
+    #original_filename = kwargs['demo-image'].original_filename
 
+    filepath2 = kwargs['data'].filename
+    name = kwargs['data'].name
+    content_type_info = kwargs['data'].content_type
+    original_filename = kwargs['data'].original_filename
+    
     ## Import file
     #data = imread(filepath)
 
@@ -183,14 +198,14 @@ def predict(**kwargs):
         #read_image = data
         list_images = []
 
-        read_image = imread(filepath)   
+        read_image = imread(filepath2)   
         image_resized = transform.resize(read_image, input_size_2).astype(np.float32)
         
         list_images.append(image_resized) 
         
-        X_test = np.array(list_images)
+        X_test_one = np.array(list_images)
 
-        print("Shape of this image" , X_test.shape)
+        print("Shape of this image" , X_test_one.shape)
         print("Preprocessing Done")
 
 
@@ -203,18 +218,19 @@ def predict(**kwargs):
 
         print("Model : successfully loaded")
 
+
         # inference for image
-        prediction = load_model.predict(X_test) #
+        prediction = load_model.predict(X_test_one) #
 
         preds_test_t = (prediction > 0.3).astype(np.uint8)
 
-        X_test_result = np.squeeze(preds_test_t[0,:,:,2])*255
+        X_test_one_result = np.squeeze(preds_test_t[0,:,:,2])*255
 
         print('inference Done')
 
 
         # Saving result 
-        imsave("output.png", X_test_result)
+        imsave("output.png", X_test_one_result)
 
 
 
@@ -233,8 +249,29 @@ def predict(**kwargs):
         #shutil.copyfile("output.png",
         #                zip_dir.name + '/demo.png')
 
-        shutil.copyfile(filepath,
-                zip_dir.name + '/demo.png')        
+        #shutil.copyfile(filepath,
+        #        zip_dir.name + '/demo.png')        
+        
+        #shutil.copyfile(filepath2,
+        #        zip_dir.name + '/demo')
+        
+        #shutil.copyfile(filepath2,
+        #    zip_dir.name + '/' + original_filename)
+
+        shutil.copyfile(filepath2,
+            original_filename)
+
+        #data_path = zip_dir.name + '/' + original_filename
+
+        #with ZipFile(data_path, 'r') as obj_zip:
+        #    FileNames = obj_zip.namelist()
+        #    print("the list files in zip", FileNames)
+
+
+        #with ZipFile(original_filename, 'r') as zipObj:
+            #Extract all the contents of zip file in current directory
+        #    zipObj.extractall()
+
         # Add for example a demo txt file
         with open(f'{zip_dir.name}/demo.txt', 'w') as f:
             f.write('Add here any additional information!')
@@ -245,58 +282,126 @@ def predict(**kwargs):
         zip_path = zip_dir.name + '.zip'
 
         
-        ########## Preprocessing 
-        # 2 case , dataset.zip
+        
 
-        #read_image = data
-        #list_images = []
-
-        #shutil.unpack_archive(filepath, "data_output")
-        
-        
-        #with zipfile.ZipFile(filepath, 'r') as zip_ref:
-        #    zip_ref.extractall("./unet/")
-        
-        #data_dir_path = r'/My Drive/ESRF_Seg_Hands_on/'
-        
-        #root = os.getcwd()
-        
-        #data_dir_path = filepath
-        #os.makedirs(root+data_dir_path, exist_ok=True)
-        #os.listdir(root+data_dir_path)
-        #full_path = root+data_dir_path
-
-        print("This is the file path as filename", filepath)
+        ####### Some information about input
+        print(os.getcwd())
         print("THis is the name", name)
         print("THis is the content_type", content_type_info) 
         print("THis is the original_file_name", original_filename) 
+        print("filepath2", filepath2)
+    
+        print("THis the zip path", zip_path)
 
-        #with ZipFile(f"{filepath}", 'r') as zipObj:
-            # Extract all the contents of zip file in current directory
-        #    zipObj.extractall()
 
-        #!unzip -q filepath
-        print('unpack done')
-        #read_image = imread(filepath)   
-        #image_resized = transform.resize(read_image, input_size_2).astype(np.float32)
         
-        #list_images.append(image_resized) 
-        
-        #X_test = np.array(list_images)
+        ########## Preprocessing 
+        print("Preprocessing Start")
 
-        #print("Shape of this image" , X_test.shape)
-        #print("Preprocessing Done")
+        # 2 case , dataset.zip
+
+        # Extract dataset zip file
+
+        with zipfile.ZipFile(original_filename, 'r') as zip_ref:
+            zip_ref.extractall()
         
+        print('Unpack the data zip file done')
+
+
+
+        root = os.getcwd()
+        file_path_0 = root + '/' + original_filename
+        file_name_0 = Path(file_path_0).stem
+        
+        print("the root", root)
+        print("the file_path_0", file_path_0)
+        print("the file_name_0", file_name_0)
+        #os.makedirs(root+data_dir_path, exist_ok=True)
+        
+        clean_files_path_0 = root + '/' + file_name_0
+        #print("the os.listdir", os.listdir(clean_files_path_0))
+        
+        #print("This should be an output like this [images, masks] or this [masks, images] ")
+
+        #path_to_images = clean_files_path_0 + "/images" 
+        #path_to_masks = clean_files_path_0 + "/masks" 
+        path_to_images = clean_files_path_0
+
+        images_name = os.listdir(path_to_images)
+        #masks_names = os.listdir(path_to_masks)
+
+        #print("The names of images and maks must be the same and it's", images_names==masks_names)
+        print(f"You have {len(images_name)} images in your dataset ")        
+
+
+        #########
+        # a revoir
+        images_name = images_name
+        path = path_to_images
+
+        X_test_data = []
+
+        # if train or test ....(i should add a funtion to precise , if train or test)
+        for img_name in tqdm(images_name):
+            # preprocessing images
+            x_read_image = imread(path+'/'+img_name)
+            x_image_resized = transform.resize(x_read_image, input_size_2).astype(np.float32)
+            X_test_data.append(x_image_resized)
+            
+        X_test_data = np.array(X_test_data)
+
+
+        print("Preprocessing data Done !")
+        print("shape of your data", X_test_data.shape)
+
+
+
+        ### Load Model 
+
+        x_load_model = tf.keras.models.load_model('./unet/unet/models_folder/best_model.h5', custom_objects={'dice_coefficient': dice_coefficient})
+
+        print("Model : successfully loaded and ready to do prediction ")
+        
+        
+        ### Inference for dataset 
+        print("inference start ")
+
+        prediction_data = x_load_model.predict(X_test_data, verbose=1)
+        prediction_data_thresh = (prediction_data > 0.3).astype(np.uint8)
+
+        print("Prediction done")
+        
+        print("Saving results ... ")
+        
+        for ix, img_name in tqdm(zip(range(len(images_name)), images_name), total=len(images_name)): 
+            result_mask = np.squeeze(prediction_data_thresh[ix,:,:,2])*255
+            imsave(zip_dir.name + f"/{img_name}", result_mask)
+
+        print('inference Done')
+        print("You can dowload the masks")
+        # Saving result 
+        
+
+        ###########
+
+        #with ZipFile(original_filename, 'r') as obj_zip:
+        #    FileNames = obj_zip.namelist()
+        #    #print("the list files in zip", FileNames)
+        #    for elem in FileNames:
+        #        print(elem)
 
         
         #inference for dataset
         # ...
         
-
-
-
+        #final step
+        #with ZipFile('spam.zip', 'w') as myzip:
+        #    myzip.write('eggs.txt')
 
         return open(zip_path, 'rb')
+
+
+        
 
 # def get_metadata():
 #     return {}

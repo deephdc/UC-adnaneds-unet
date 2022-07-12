@@ -7,3 +7,5 @@ matplotlib
 h5py
 tensorflow
 pytest-shutil
+zipfile36
+tqdm
