@@ -277,9 +277,7 @@ def predict(**kwargs):
             f.write('Add here any additional information!')
 
 
-        # Pack dir into zip and return it
-        shutil.make_archive(zip_dir.name, format='zip', root_dir=zip_dir.name)
-        zip_path = zip_dir.name + '.zip'
+
 
         
         
@@ -291,7 +289,6 @@ def predict(**kwargs):
         print("THis is the original_file_name", original_filename) 
         print("filepath2", filepath2)
     
-        print("THis the zip path", zip_path)
 
 
         
@@ -375,7 +372,7 @@ def predict(**kwargs):
         
         for ix, img_name in tqdm(zip(range(len(images_name)), images_name), total=len(images_name)): 
             result_mask = np.squeeze(prediction_data_thresh[ix,:,:,2])*255
-            imsave(zip_dir.name + '/' + f"{img_name}", result_mask)
+            imsave(f'{zip_dir.name}' + '/' + f'{img_name}', result_mask)
 
         print('inference Done')
         print("You can dowload the masks")
@@ -397,6 +394,12 @@ def predict(**kwargs):
         #final step
         #with ZipFile('spam.zip', 'w') as myzip:
         #    myzip.write('eggs.txt')
+
+
+        # Pack dir into zip and return it
+        shutil.make_archive(zip_dir.name, format='zip', root_dir=zip_dir.name)
+        zip_path = zip_dir.name + '.zip'
+        print("THis the zip path", zip_path)
 
         return open(zip_path, 'rb')
 
