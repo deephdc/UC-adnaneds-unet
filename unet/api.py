@@ -109,8 +109,6 @@ def dice_coefficient(y_true, y_pred):
 
 
 
-
-
 #### API functions start from here 
 
 
@@ -162,7 +160,7 @@ def get_predict_args():
         ),
     }
     return arg_dict
-
+    
 
 
 
@@ -279,9 +277,9 @@ def predict(**kwargs):
             f.write('Add here any additional information!')
 
 
-
-
-        
+        #with ZipFile(file, mode='r', compression=ZIP_STORED, allowZip64=True)
+        #    liste = f.namelist()
+        #    for ... read(origin+liste[i])
         
 
         ####### Some information about input
@@ -386,7 +384,7 @@ def predict(**kwargs):
         shutil.make_archive(zip_dir.name, format='zip', root_dir=zip_dir.name)
         zip_path = zip_dir.name + '.zip'
         print("THis the zip path", zip_path)
-
+        #print("new_ version")
         return open(zip_path, 'rb')
 
 
@@ -409,13 +407,224 @@ def predict(**kwargs):
 #     return None
 #
 #
+
+#####################################################################
+########################## Training Part ###########################
+
+def get_train_args():
+    """
+    Input fields for the user.
+    """
+    arg_dict = {
+        
+        #"data": fields.Field(
+        #    description="Data file to perform inference on.",
+        #    required=False,
+        #    missing=None,
+        #    type="file",
+        #    location="form")
+        #                        ,
+        
+           "arg1": fields.Str(
+            required=False,  # force the user to define the value
+            missing="foo",  # default value to use
+            enum=["choice1", "choice2"],  # list of choices
+            description="Argument one"  # help string
+            ),
+        # Add format type of the response of predict()
+        # For demo purposes, we allow the user to receive back
+        # either an image or a zip containing an image.
+        # More options for MIME types: https://mimeapplication.net/
+        
+        #"accept": fields.Str(
+        #    description="Media type(s) that is/are acceptable for the response.",
+        #    validate=validate.OneOf(["image/*", "application/zip"]),
+        # ),
+    }
+    return arg_dict
+
+
+#def get_train_args():
+#    return {
+#        "arg1": fields.Str(
+#            required=False,  # force the user to define the value
+#            missing="foo",  # default value to use
+#            enum=["choice1", "choice2"],  # list of choices
+#            description="Argument one"  # help string
+#        ),
+#    }
+
+
+
+
+
+
+
+
 # def get_train_args():
 #     return {}
 #
 #
-def train(**kwargs):
-    return predict(**kwargs)
 
+@_catch_error
+def train(**kwargs):
+
+        #if kwargs['accept'] == 'application/zip' :
+        #    
+        #    filepath2 = kwargs['data'].filename
+        #    name = kwargs['data'].name
+        #    content_type_info = kwargs['data'].content_type
+        #    original_filename = kwargs['data'].original_filename
+        #    
+        #    zip_dir = tempfile.TemporaryDirectory()
+    #
+        #    # Add original image to output zip
+        #    #shutil.copyfile("output.png",
+        #    #                zip_dir.name + '/demo.png')
+    #
+        #    #shutil.copyfile(filepath,
+        #    #        zip_dir.name + '/demo.png')        
+        #    
+        #    #shutil.copyfile(filepath2,
+        #    #        zip_dir.name + '/demo')
+        #    
+        #    #shutil.copyfile(filepath2,
+        #    #    zip_dir.name + '/' + original_filename)
+    #
+        #    shutil.copyfile(filepath2,
+        #        original_filename)
+    #
+        #    #data_path = zip_dir.name + '/' + original_filename
+    #
+        #    #with ZipFile(data_path, 'r') as obj_zip:
+        #    #    FileNames = obj_zip.namelist()
+        #    #    print("the list files in zip", FileNames)
+    #
+    #
+        #    #with ZipFile(original_filename, 'r') as zipObj:
+        #        #Extract all the contents of zip file in current directory
+        #    #    zipObj.extractall()
+    #
+        #    # Add for example a demo txt file
+        #    with open(f'{zip_dir.name}/demo.txt', 'w') as f:
+        #        f.write('Add here any additional information!')
+    #
+    #
+    #
+    #
+        #    
+        #    
+    #
+        #    ####### Some information about input
+        #    print(os.getcwd())
+        #    print("THis is the name", name)
+        #    print("THis is the content_type", content_type_info) 
+        #    print("THis is the original_file_name", original_filename) 
+        #    print("filepath2", filepath2)
+        #
+    #
+    #
+        #    
+        #    ########## Preprocessing 
+        #    print("Preprocessing Start")
+    #
+        #    # 2 case , dataset.zip
+    #
+        #    # Extract dataset zip file
+    #
+        #    with zipfile.ZipFile(original_filename, 'r') as zip_ref:
+        #        zip_ref.extractall()
+        #    
+        #    print('Unpack the data zip file done')
+    #
+    #
+    #
+        #    root = os.getcwd()
+        #    file_path_0 = root + '/' + original_filename
+        #    file_name_0 = Path(file_path_0).stem
+        #    
+        #    print("the root", root)
+        #    print("the file_path_0", file_path_0)
+        #    print("the file_name_0", file_name_0)
+        #    #os.makedirs(root+data_dir_path, exist_ok=True)
+        #    
+        #    clean_files_path_0 = root + '/' + file_name_0
+        #    #print("the os.listdir", os.listdir(clean_files_path_0))
+        #    
+        #    #print("This should be an output like this [images, masks] or this [masks, images] ")
+    #
+        #    #path_to_images = clean_files_path_0 + "/images" 
+        #    #path_to_masks = clean_files_path_0 + "/masks" 
+        #    path_to_images = clean_files_path_0
+    #
+        #    images_name = os.listdir(path_to_images)
+        #    #masks_names = os.listdir(path_to_masks)
+    #
+        #    #print("The names of images and maks must be the same and it's", images_names==masks_names)
+        #    print(f"You have {len(images_name)} images in your dataset ")        
+    #
+    #
+        #    #########
+        #    # a revoir
+        #    images_name = images_name
+        #    path = path_to_images
+    #
+        #    X_test_data = []
+    #
+        #    # if train or test ....(i should add a funtion to precise , if train or test)
+        #    for img_name in tqdm(images_name):
+        #        # preprocessing images
+        #        x_read_image = imread(path+'/'+img_name)
+        #        x_image_resized = transform.resize(x_read_image, input_size_2).astype(np.float32)
+        #        X_test_data.append(x_image_resized)
+        #        
+        #    X_test_data = np.array(X_test_data)
+    #
+    #
+        #    print("Preprocessing data Done !")
+        #    print("shape of your data", X_test_data.shape)
+    #
+    #
+    #
+        #    ### Load Model 
+    #
+        #    x_load_model = tf.keras.models.load_model('./unet/unet/models_folder/best_model.h5', custom_objects={'dice_coefficient': dice_coefficient})
+    #
+        #    print("Model : successfully loaded and ready to do prediction ")
+        #    
+        #    
+        #    ### Inference for dataset 
+        #    print("inference start ")
+    #
+        #    prediction_data = x_load_model.predict(X_test_data)
+        #    prediction_data_thresh = (prediction_data > 0.3).astype(np.uint8)
+    #
+        #    print("Prediction done")
+        #    
+    #
+        #    ## Saving result 
+        #    print("Saving results ... ")
+        #    
+        #    for ix, img_name in tqdm(zip(range(len(images_name)), images_name), total=len(images_name)): 
+        #        result_mask = np.squeeze(prediction_data_thresh[ix,:,:,2])*255
+        #        imsave(f'{zip_dir.name}' + '/' + f'{img_name}', result_mask)
+    #
+        #    print('inference Done')
+        #    print("You can dowload the masks, the temporary directory below")
+        #    
+        #    # Saving result into zip file
+        #    # Pack dir into zip and return it
+        #    shutil.make_archive(zip_dir.name, format='zip', root_dir=zip_dir.name)
+        #    zip_path = zip_dir.name + '.zip'
+        #    print("THis the zip path", zip_path)
+        #    #print("new_ version")
+        #    
+        #    #return open(zip_path, 'rb')
+        #    #return {'zip_path':zip_path}
+    #
+        #    return {}
+    diction = dict()
+    return diction
 
 ################################################################
 # Some functions that are not mandatory but that can be useful #
@@ -508,3 +717,18 @@ def train(**kwargs):
 #                 meta[par] = value
 #
 #     return meta
+
+
+############ Adding 
+
+# Schema to validate the `predict()` output
+#schema = {
+#    
+#    "demo-image": fields.Str(
+#        description='image'),  # needed to be parsed by UI
+#
+#    "data": fields.Field(
+#        description="Data file to perform inference on."),
+#
+#
+#    }
