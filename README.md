@@ -1,7 +1,7 @@
-# unet
+# 2D semantic segmentation multilabels with Unet
 [![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/unet/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/unet/job/master)
 
-Semantic segmentation
+Semantic segmentation with Unet Deep Learning model applied to segment Cercospora Leaf Spot. The dataset contains three classes: Background, Leaf and Disease.
 
 To launch it, first install the package then run [deepaas](https://github.com/indigo-dc/DEEPaaS):
 ```bash
