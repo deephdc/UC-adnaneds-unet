@@ -126,9 +126,23 @@ def _catch_error(f):
 
 def get_metadata():
     metadata = {
-        "author": "Adnane"
+        "author": "Adnane AIT OUSSAYER",
+        "Project":
+            """
+            This work is part of the DEEP Hybrid-DataCloud project that has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 777435.
+             - 2D semantic segmentation multilabels with Unet.
+            """,
+        "license": "MIT",
+        "url": "https://github.com/adnaneds/unet",
+        "summary":
+            """
+            Semantic segmentation with Unet Deep Learning model applied to segment Cercospora Leaf Spot. 
+            The dataset used to train this model contains three classes: Background, Leaf and Disease.
+            """,
     }
     return metadata
+
+
 
 
 def get_predict_args():
