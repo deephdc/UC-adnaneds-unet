@@ -13,7 +13,7 @@ pipeline {
         author_name = "Adnane"
         author_email = "adnane.aitoussayer@etud.univ-angers.fr"
         app_name = "unet"
-        job_location = "Pipeline-as-code/DEEP-OC-org/DEEP-OC-unet/${env.BRANCH_NAME}"
+        job_location = "Pipeline-as-code/DEEP-OC-org/UC-adnaneds-DEEP-OC-unet/${env.BRANCH_NAME}"
     }
 
     stages {
