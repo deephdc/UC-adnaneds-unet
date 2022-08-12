@@ -1,5 +1,5 @@
 # 2D semantic segmentation multilabels with Unet
-[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/unet/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/unet/job/master)
+[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/UC-adnaneds-unet/main)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/UC-adnaneds-unet/job/main)
 
 Semantic segmentation with Unet Deep Learning model applied to segment Cercospora Leaf Spot. The dataset used to train this model contains three classes: Background, Leaf and Disease.
 
