@@ -26,7 +26,7 @@ pipeline {
         stage("Re-build Docker images") {
             when {
                 anyOf {
-                   branch 'master'
+                   branch 'main'
                    branch 'test'
                    buildingTag()
                }
